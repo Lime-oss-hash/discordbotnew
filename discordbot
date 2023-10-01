@@ -1,0 +1,37 @@
+const { Client, Intents } = require('discord.js');
+const client = new Client({
+  intents: [
+    Intents.FLAGS.GUILDS,
+    Intents.FLAGS.GUILD_MESSAGES,
+    Intents.FLAGS.GUILD_MESSAGE_REACTIONS, 
+  ],
+});
+const token = 'YOUR_BOT_TOKEN'; // Replace with your bot's token
+const commandPrefix = '!';
+
+client.once('ready', () => {
+  console.log(Logged in as ${client.user.tag});
+});
+
+client.on('messageCreate', async (message) => {
+  if (message.content.toLowerCase() === ${commandPrefix}sendmessage) {
+    try {
+      const servers = client.guilds.cache.array(); // Get an array of all servers the bot is in
+      const messageToSend = 'This message will be sent to all servers!';
+
+      for (const server of servers) {
+        const channel = server.channels.cache.find(
+          (ch) => ch.type === 'GUILD_TEXT' && ch.permissionsFor(client.user).has('SEND_MESSAGES')
+        );
+
+        if (channel) {
+          await channel.send(messageToSend);
+        }
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
+  }
+});
+
+client.login(token); 
